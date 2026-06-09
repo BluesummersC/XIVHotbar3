@@ -52,21 +52,21 @@ tier_list = {}
 buff_table = {
     [211] = 'Light Arts',
     [212] = 'Dark Arts',
-	-- Avatars
-	[1001] = 'Carbuncle',
-	[1002] = 'Ifrit',
-	[1003] = 'Shiva',
-	[1004] = 'Leviathan',
-	[1005] = 'Ramuh',
-	[1006] = 'Fenrir',
-	[1007] = 'Diabolos',
-	[1008] = 'Alexander',
-	[1009] = 'Cait Sith',
-	[1010] = 'Garuda',
-	[1011] = 'Odin',
-	[1012] = 'Titan',
-	[1013] = 'Atomos',
-    
+    -- Avatars
+    [1001] = 'Carbuncle',
+    [1002] = 'Ifrit',
+    [1003] = 'Shiva',
+    [1004] = 'Leviathan',
+    [1005] = 'Ramuh',
+    [1006] = 'Fenrir',
+    [1007] = 'Diabolos',
+    [1008] = 'Alexander',
+    [1009] = 'Cait Sith',
+    [1010] = 'Garuda',
+    [1011] = 'Odin',
+    [1012] = 'Titan',
+    [1013] = 'Atomos',
+
 }
 
 
@@ -86,22 +86,23 @@ _general_fileG = {}
 _general_fileG.xivhotbar_keybinds_general = {}
 
 weaponskill_types = {
-	[1] = "Hand-to-hand",
-	[2] = "Dagger", 
-	[3] = "Sword",
-	[4] = "Great Sword",
-	[5] = "Axe",
-	[6] = "Great Axe",
-	[7] = "Scythe",
-	[8] = "Polearm",
-	[9] = "Katana",
-	[10] = "Great Katana",
-	[11] = "Club",
-	[12] = "Staff",
-	[25] = "Bow",
-	[26] = "Marksmanship",
+    [1] = "Hand-to-hand",
+    [2] = "Dagger",
+    [3] = "Sword",
+    [4] = "Great Sword",
+    [5] = "Axe",
+    [6] = "Great Axe",
+    [7] = "Scythe",
+    [8] = "Polearm",
+    [9] = "Katana",
+    [10] = "Great Katana",
+    [11] = "Club",
+    [12] = "Staff",
+    [25] = "Bow",
+    [26] = "Marksmanship",
 }
 
+last_battle_mode = {}
 
 local function create_table(_new_table, _table_key)
     setmetatable(_new_table, {
@@ -121,7 +122,7 @@ local function create_table(_new_table, _table_key)
             end
         end
     end
-	})
+    })
 end
 
 local keybinds_job_table = {
@@ -175,8 +176,8 @@ local function init_action_table(actions_table)
     actions_table.action = {}
     actions_table.target = {}
     actions_table.alias = {}
-	actions_table.icon = {}
-  
+    actions_table.icon = {}
+
 end
 
 function action_manager:init_action_tables()
@@ -201,7 +202,7 @@ function action_manager:build(type, action, target, alias, icon)
     if icon == '' then icon = nil end
     if icon ~= nil then
         new_action.icon = icon
-        
+
     end
 
     return new_action
@@ -211,7 +212,13 @@ end
 -- add given action to a hotbar
 local function add_action(am, action, environment, hotbar, slot)
     status = true
-    if environment == 'b' then environment = 'battle' elseif environment == 'f' then environment = 'field' end
+    if environment == 'b' then
+        environment = 'battle'
+    elseif environment == 'e' then
+        environment = 'extra'
+    elseif environment == 'f' then
+        environment = 'field'
+    end
     --if slot == 10 then slot = 0 end
 
     if am.hotbar[environment] == nil then
@@ -219,7 +226,7 @@ local function add_action(am, action, environment, hotbar, slot)
         status = false
     end
 
-    if (tonumber(hotbar) > am.hotbar_rows) then 
+    if (tonumber(hotbar) > am.hotbar_rows) then
         status = false
     elseif am.hotbar[environment]['hotbar_' .. hotbar] == nil then
         windower.console.write('XIVHOTBAR: invalid hotbar (hotbar number)')
@@ -227,7 +234,7 @@ local function add_action(am, action, environment, hotbar, slot)
     end
     if status == true then
         if am.hotbar[environment]['hotbar_' .. hotbar]['slot_' .. slot] == nil then
-            am.hotbar[environment]['hotbar_' .. hotbar]['slot_' .. slot] = {} 
+            am.hotbar[environment]['hotbar_' .. hotbar]['slot_' .. slot] = {}
             status = false
         end
 
@@ -239,26 +246,26 @@ end
 
 
 local function fill_table(file_table, file_key, actions_table)
-	-- Slot_key is 'battle 1 2' in a job/general file.
+    -- Slot_key is 'battle 1 2' in a job/general file.
     -- file_table is each slot that contains a list of string. Example (First Key): file_table = {'battle 1 1', 'ma', 'Cure', 'stpc', 'Cure'}
     -- file_key is the number for that slot. Example (First Key): 1
-	local slot_key = T(file_table[1]:split(' ')) -- Splits 'battle 1 1' into a list {'battle','1','1'}
+    local slot_key = T(file_table[1]:split(' ')) -- Splits 'battle 1 1' into a list {'battle','1','1'}
 
-	actions_table.environment[file_key] = slot_key[1] --environment is either battle or field
-	actions_table.hotbar[file_key]      = slot_key[2] --hotbar number
-	actions_table.slot[file_key]        = slot_key[3] --slot number in above hotbar
-	actions_table.type[file_key]        = file_table[2] -- type of attack: ma, ws, input, macro etc.
-	actions_table.action[file_key]      = file_table[3] -- name of action: dia, slow, provoke, etc. 
-	actions_table.target[file_key]      = file_table[4] -- target: t, st, stnpc, etc    
+    actions_table.environment[file_key] = slot_key[1] --environment is either battle or field
+    actions_table.hotbar[file_key]      = slot_key[2] --hotbar number
+    actions_table.slot[file_key]        = slot_key[3] --slot number in above hotbar
+    actions_table.type[file_key]        = file_table[2] -- type of attack: ma, ws, input, macro etc.
+    actions_table.action[file_key]      = file_table[3] -- name of action: dia, slow, provoke, etc.
+    actions_table.target[file_key]      = file_table[4] -- target: t, st, stnpc, etc
     actions_table.alias[file_key]       = file_table[5] -- display name for each slot/skill
-	if (file_table[6] ~= nil) then -- if last slot of file_table is not empty/blank then...
+    if (file_table[6] ~= nil) then -- if last slot of file_table is not empty/blank then...
         actions_table.icon[file_key]    = file_table[6] -- name of icon image in images/icons/custom folder
-	end
+    end
 
 end
 
-function action_manager:update_stance(buff_id)  
-	current_stance = buff_id
+function action_manager:update_stance(buff_id)
+    current_stance = buff_id
 end
 
 -- create a default hotbar
@@ -274,30 +281,30 @@ local function create_default_hotbar()
 end
 
 local function parse_general_binds(hotbar)
-	for key, val in pairs(hotbar['Root']) do
+    for key, val in pairs(hotbar['Root']) do
         if action_req_check(hotbar['Root'][key]) == true then
-		    fill_table(hotbar['Root'][key], key, general_actions)
+            fill_table(hotbar['Root'][key], key, general_actions)
         end
-	end
+    end
 end
 
 function action_req_check(action_array)
     local slot_key = T(action_array[1]:split(' '))
     row = tonumber(slot_key[2])
     col = tonumber(slot_key[3])
-    
-   
+
+
     -- print("-----------------------")
     -- for k,v in pairs(tier_list) do
     --     print(v)
     -- end
     -- print("-----------------------")
-   
-    
+
+
     if action_array[2] == 'ma' then
         -- Note: create function validate_ma to do the below code in a more organized manner
         if check_spell_level(action_array[3]) == true then
-            if check_if_spell_learned(action_array[3]) == true then 
+            if check_if_spell_learned(action_array[3]) == true then
                  -- LEARNED AND PREVIOUS IS SAME SLOT --
                 if previous_slot == action_array[1] then --If previous action was on same slot and character meets level requirement but not learned requirement
                     if previous_learned == true then
@@ -309,8 +316,8 @@ function action_req_check(action_array)
                                tier_list_complete = false
                             end
                         end
-                        if tier_list_complete == true then 
-                            
+                        if tier_list_complete == true then
+
                             not_learned_spells_row_slot[action_array[3]] = false
                         end
                         previous_level_req_met = true
@@ -318,47 +325,47 @@ function action_req_check(action_array)
                     elseif previous_learned ~= true then
                         for k,v in pairs(tier_list) do
                             if v ~= false then
-                                
+
                                 if previous_level_req_met == true then
                                     not_learned_spells_row_slot[action_array[3]] = action_array[1]
                                 end
                                 previous_slot = action_array[1]
                                 previous_learned = true
                                 previous_level_req_met = true
-                                return false 
+                                return false
                             end
                         end
                         table.insert(tier_list,action_array[3])
-                    
-                        if previous_level_req_met == true then 
+
+                        if previous_level_req_met == true then
                             not_learned_spells_row_slot[action_array[3]] = action_array[1]
                         end
                         previous_slot = action_array[1]
                         previous_learned = true
                         previous_level_req_met = true
-                        return true 
+                        return true
                     end
                 -- LEARNED AND PREVIOUS IS NOT SAME SLOT --
                 elseif previous_slot ~= action_array[1] then -- Head of the list, could just be a list of 1.
                     tier_list = {} -- Empty this list and start new list with action name on next line.
                     table.insert(tier_list,action_array[3])
-                    
+
                     not_learned_spells_row_slot[action_array[3]] = false
                     previous_slot = action_array[1]
                     previous_learned = true
                     previous_level_req_met = true
                     return true
-                end    
+                end
             elseif check_if_spell_learned(action_array[3]) ~= true then
                 -- NOT LEARNED AND PREVIOUS NOT SAME SLOT --
                 if previous_slot ~= action_array[1] then --If action doesn't share a hotbar slot
                     tier_list = {}
                     table.insert(tier_list,false)
-                  
+
                     not_learned_spells_row_slot[action_array[3]] = action_array[1]
                     for key,val in pairs(spells) do
                         if action_array[3] == spells[key]['en'] then
-                            table.insert(not_learned_spells,action_array[3]) 
+                            table.insert(not_learned_spells,action_array[3])
                             previous_slot = action_array[1]
                             previous_learned = false
                             previous_level_req_met = true
@@ -370,9 +377,9 @@ function action_req_check(action_array)
                     table.insert(tier_list,false)
                     for k,v in pairs(tier_list) do
                         if v ~= false then
-                           
+
                             not_learned_spells_row_slot[action_array[3]] = action_array[1]
-                            
+
                             break
                         end
                     end
@@ -407,13 +414,13 @@ function action_req_check(action_array)
         end
         return false
     elseif action_array[2] == 'ct' or action_array[2] == 'pet' then
-        return true 
+        return true
     elseif action_array[2] == 'input' then
         return true
     elseif action_array[2] == 'macro' then
         return true
     elseif action_array[2] == 'gs' then
-       
+
         return true
     else
         return false
@@ -453,10 +460,10 @@ end
 
 
 function check_if_ability_learned(ability_name_en)
-   
+
     for key,val in pairs(ability_list) do
         if ability_list[key]['en'] == ability_name_en then
-            for k,v in pairs(learned_abilities_id) do                
+            for k,v in pairs(learned_abilities_id) do
                 if v == ability_list[key]['id'] then
                     return true
                 end
@@ -467,7 +474,7 @@ function check_if_ability_learned(ability_name_en)
 end
 
 function check_if_ws_learned(ws_name_en)
-   
+
     for key,val in pairs(ws_list) do
         if ws_list[key]['en'] == ws_name_en then
             for k,v in pairs(learned_ws_id) do
@@ -481,7 +488,7 @@ function check_if_ws_learned(ws_name_en)
 end
 
 local function parse_binds(theme_options, player, hotbar)
-    
+
     learned_abilities_id = {}
     learned_spells_name = {}
     learned_ws_id = {}
@@ -491,25 +498,25 @@ local function parse_binds(theme_options, player, hotbar)
     if theme_options.playing_on_horizon == true then
         spells = horizon_spell_list
         for key,val in pairs(horizon_spell_list) do
-            if windower.ffxi.get_spells()[spells[key]['id']] == true then 
-                table.insert(learned_spells_name,spells[key]['en']) 
+            if windower.ffxi.get_spells()[spells[key]['id']] == true then
+                table.insert(learned_spells_name,spells[key]['en'])
             end
         end
     elseif theme_options.playing_on_horizon == false then
         spells = spell_list
         for key,val in pairs(spell_list) do
-            if windower.ffxi.get_spells()[spells[key]['id']] == true then 
-                table.insert(learned_spells_name,spells[key]['en']) 
+            if windower.ffxi.get_spells()[spells[key]['id']] == true then
+                table.insert(learned_spells_name,spells[key]['en'])
             end
         end
     end
-    
+
     -- Create Learned Abilities List
     abilities = ability_list
     for key,val in pairs(windower.ffxi.get_abilities().job_abilities) do
         for k,v in pairs(abilities) do
             if val == k then
-                table.insert(learned_abilities_id,abilities[k]['id'])  
+                table.insert(learned_abilities_id,abilities[k]['id'])
             end
         end
     end
@@ -519,58 +526,58 @@ local function parse_binds(theme_options, player, hotbar)
     for key,val in pairs(windower.ffxi.get_abilities().weapon_skills) do
         for k,v in pairs(weaponskills) do
             if val == k then
-                table.insert(learned_ws_id,weaponskills[k]['id'])  
+                table.insert(learned_ws_id,weaponskills[k]['id'])
             end
         end
     end
-    
+
     -- MAIN JOB -- FILL TABLE
-	for key, val in pairs(hotbar['Base']) do -- Goes through each slot in the 'Base' job. Key is number sequenced. Values is list of strings.
+    for key, val in pairs(hotbar['Base']) do -- Goes through each slot in the 'Base' job. Key is number sequenced. Values is list of strings.
         if action_req_check(hotbar['Base'][key]) == true then
-            fill_table(hotbar['Base'][key], key, mainjob_actions) -- hotbar['Base'][key] is each line in the BASE section of the JOB.lua file  
+            fill_table(hotbar['Base'][key], key, mainjob_actions) -- hotbar['Base'][key] is each line in the BASE section of the JOB.lua file
         end
     end
 
     -- SUB JOB -- FILL TABLE
-	if (hotbar[player.sub_job] ~= nil) then
-		for key, val in pairs(hotbar[player.sub_job]) do
-            if action_req_check(hotbar[player.sub_job][key]) == true then 
-			    fill_table(hotbar[player.sub_job][key], key, subjob_actions)
+    if (hotbar[player.sub_job] ~= nil) then
+        for key, val in pairs(hotbar[player.sub_job]) do
+            if action_req_check(hotbar[player.sub_job][key]) == true then
+                fill_table(hotbar[player.sub_job][key], key, subjob_actions)
             end
-		end
-	else
-		for key, val in pairs(subjob_actions.environment) do
-			self:remove_action()
-		end
-		subjob_actions = {}
-	end
+        end
+    else
+        for key, val in pairs(subjob_actions.environment) do
+            self:remove_action()
+        end
+        subjob_actions = {}
+    end
 
     -- STANCE -- FILL TABLE
     if (hotbar[buff_table[current_stance]] ~= nil) then
         local stance_table = hotbar[buff_table[current_stance]]
         for key, val in pairs(stance_table) do
-            if action_req_check(stance_table[key]) == true then 
+            if action_req_check(stance_table[key]) == true then
                 fill_table(stance_table[key], key, stance_actions)
             end
         end
     end
 
     -- WEAPON SWITCHING -- FILL TABLE
-	if (theme_options.enable_weapon_switching == true) then
-		if (weaponskill_types[player.current_weapon] ~= nil) then
-			if (hotbar[weaponskill_types[player.current_weapon]] ~= nil) then
-				for key, val in pairs(hotbar[weaponskill_types[player.current_weapon]]) do 
+    if (theme_options.enable_weapon_switching == true) then
+        if (weaponskill_types[player.current_weapon] ~= nil) then
+            if (hotbar[weaponskill_types[player.current_weapon]] ~= nil) then
+                for key, val in pairs(hotbar[weaponskill_types[player.current_weapon]]) do
                     if action_req_check(hotbar[weaponskill_types[player.current_weapon]][key]) == true then
-					    fill_table(hotbar[weaponskill_types[player.current_weapon]][key], key, weaponskill_actions)
+                        fill_table(hotbar[weaponskill_types[player.current_weapon]][key], key, weaponskill_actions)
                     end
-				end
-			end
-		end
-	end
+                end
+            end
+        end
+    end
 end
 
 function action_manager:initialize(theme_options)
-	self.theme_options       = theme_options
+    self.theme_options       = theme_options
     self.hotbar_settings.max = theme_options.hotbar_number
     self.hotbar_rows         = theme_options.rows
 end
@@ -578,13 +585,14 @@ end
 function action_manager:reset_hotbar()
     self.hotbar = {
         ['battle'] = {},
+        ['extra'] = {},
         ['field'] = {}
     }
 
     for h=1,self.hotbar_settings.max,1 do
-        
         self.hotbar.field['hotbar_' .. h] = {}
         self.hotbar.battle['hotbar_' .. h] = {}
+        self.hotbar.extra['hotbar_' .. h] = {}
     end
 
     self.hotbar_settings.active_hotbar = 1
@@ -595,83 +603,111 @@ function action_manager:build_custom(action, alias, icon)
 end
 
 function action_manager:swap_actions(player, swap_table)
-	local s_row  = swap_table.source.row
-	local s_slot = swap_table.source.slot
-	local d_row  = swap_table.dest.row
-	local d_slot = swap_table.dest.slot
+    local s_row  = swap_table.source.row
+    local s_slot = swap_table.source.slot
+    local d_row  = swap_table.dest.row
+    local d_slot = swap_table.dest.slot
 
     if self.hotbar_settings.active_environment == 'battle' then
+        if (self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] ~= nil) then
+            if(self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] == nil) then
+                self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] = table.copy(self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] , true)
+                self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] = nil
 
-		if (self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] ~= nil) then
-			if(self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] == nil) then
-				self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] = table.copy(self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] , true)
-				self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] = nil
+                -- Write the changes after swapping the actions
+                local dest_action = self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot]
+                file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'b')
+            else
+                temp_slot = table.copy(self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot], true)
+                self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] = table.copy(self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot], true)
+                self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] = temp_slot
 
-				-- Write the changes after swapping the actions
-				local dest_action = self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] 
-				file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'b')
-			else
-				temp_slot = table.copy(self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot], true)
-				self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] = table.copy(self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot], true)
-				self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] = temp_slot
+                -- Write the changes after swapping the actions
+                local dest_action = self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot]
+                local source_action = self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot]
+                file_manager:write_changes(source_action, s_row, s_slot, d_row, d_slot, 'b')
+                file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'b')
+            end
+        else
+            print("XIVHOTBAR3: Cannot swap icons if the dragged icon is empty!")
+        end
 
-				-- Write the changes after swapping the actions
-				local dest_action = self.hotbar['battle']['hotbar_' .. d_row]['slot_' .. d_slot] 
-				local source_action = self.hotbar['battle']['hotbar_' .. s_row]['slot_' .. s_slot] 
-				file_manager:write_changes(source_action, s_row, s_slot, d_row, d_slot, 'b')
-				file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'b')
-			end
-		else
-			print("XIVHOTBAR2: Cannot swap icons if the dragged icon is empty!")
-		end
-    else -- field
+    elseif self.hotbar_settings.active_environment == 'field' then -- field
+        if (self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] ~= nil) then
+            if(self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] == nil) then
+                self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] = table.copy(self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] , true)
+                self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] = nil
 
-		if (self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] ~= nil) then
-			if(self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] == nil) then
-				self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] = table.copy(self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] , true)
-				self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] = nil
+                -- Write the changes after swapping the actions
+                local dest_action = self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot]
+                file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'f')
+            else
+                temp_slot = table.copy(self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot], true)
+                self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] = table.copy(self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot], true)
+                self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] = temp_slot
 
-				-- Write the changes after swapping the actions
-				local dest_action = self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] 
-				file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'f')
-			else
-				temp_slot = table.copy(self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot], true)
-				self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] = table.copy(self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot], true)
-				self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] = temp_slot
+                -- Write the changes after swapping the actions
+                local dest_action = self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot]
+                local source_action = self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot]
+                file_manager:write_changes(source_action, s_row, s_slot, d_row, d_slot, 'f')
+                file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'f')
+            end
+        else
+            print("XIVHOTBAR: Cannot swap icons if the dragged icon is empty!")
+        end
 
-				-- Write the changes after swapping the actions
-				local dest_action = self.hotbar['field']['hotbar_' .. d_row]['slot_' .. d_slot] 
-				local source_action = self.hotbar['field']['hotbar_' .. s_row]['slot_' .. s_slot] 
-				file_manager:write_changes(source_action, s_row, s_slot, d_row, d_slot, 'f')
-				file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'f')
-			end
-		else
-			print("XIVHOTBAR: Cannot swap icons if the dragged icon is empty!")
-		end
+    elseif self.hotbar_settings.active_environment == 'extra' then -- extra
+        if (self.hotbar['extra']['hotbar_' .. s_row]['slot_' .. s_slot] ~= nil) then
+            if(self.hotbar['extra']['hotbar_' .. d_row]['slot_' .. d_slot] == nil) then
+                self.hotbar['extra']['hotbar_' .. d_row]['slot_' .. d_slot] = table.copy(self.hotbar['extra']['hotbar_' .. s_row]['slot_' .. s_slot] , true)
+                self.hotbar['extra']['hotbar_' .. s_row]['slot_' .. s_slot] = nil
+
+                -- Write the changes after swapping the actions
+                local dest_action = self.hotbar['extra']['hotbar_' .. d_row]['slot_' .. d_slot]
+                file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'f')
+            else
+                temp_slot = table.copy(self.hotbar['extra']['hotbar_' .. s_row]['slot_' .. s_slot], true)
+                self.hotbar['extra']['hotbar_' .. s_row]['slot_' .. s_slot] = table.copy(self.hotbar['extra']['hotbar_' .. d_row]['slot_' .. d_slot], true)
+                self.hotbar['extra']['hotbar_' .. d_row]['slot_' .. d_slot] = temp_slot
+
+                -- Write the changes after swapping the actions
+                local dest_action = self.hotbar['extra']['hotbar_' .. d_row]['slot_' .. d_slot]
+                local source_action = self.hotbar['extra']['hotbar_' .. s_row]['slot_' .. s_slot]
+                file_manager:write_changes(source_action, s_row, s_slot, d_row, d_slot, 'f')
+                file_manager:write_changes(dest_action, d_row, d_slot, s_row, s_slot, 'f')
+            end
+        else
+            print("XIVHOTBAR: Cannot swap icons if the dragged icon is empty!")
+        end
     end
 end
 
 function action_manager:remove_action(player, remove_table)
 
-	local row = remove_table.source.row
-	local slot = remove_table.source.slot
+    local row = remove_table.source.row
+    local slot = remove_table.source.slot
 
     if self.hotbar_settings.active_environment == 'battle' then
-		if (self.hotbar['battle']['hotbar_' .. row]['slot_' .. slot] ~= nil) then
-			file_manager:write_remove(self.hotbar['battle']['hotbar_' .. row]['slot_' .. slot], row, slot, 'b')
-			self.hotbar['battle']['hotbar_' .. row]['slot_' .. slot] = nil
-		end
-	else
-		if (self.hotbar['battle']['hotbar_' .. row]['slot_' .. slot] ~= nil) then
-			file_manager:write_remove(self.hotbar['field']['hotbar_' .. row]['slot_' .. slot], row, slot, 'f')
-			self.hotbar['field']['hotbar_' .. row]['slot_' .. slot] = nil
-		end
-	end
+        if (self.hotbar['battle']['hotbar_' .. row]['slot_' .. slot] ~= nil) then
+            file_manager:write_remove(self.hotbar['battle']['hotbar_' .. row]['slot_' .. slot], row, slot, 'b')
+            self.hotbar['battle']['hotbar_' .. row]['slot_' .. slot] = nil
+        end
+    elseif self.hotbar_settings.active_environment == 'field' then
+        if (self.hotbar['field']['hotbar_' .. row]['slot_' .. slot] ~= nil) then
+            file_manager:write_remove(self.hotbar['field']['hotbar_' .. row]['slot_' .. slot], row, slot, 'f')
+            self.hotbar['field']['hotbar_' .. row]['slot_' .. slot] = nil
+        end
+    elseif self.hotbar_settings.active_environment == 'extra' then
+        if (self.hotbar['extra']['hotbar_' .. row]['slot_' .. slot] ~= nil) then
+            file_manager:write_remove(self.hotbar['extra']['hotbar_' .. row]['slot_' .. slot], row, slot, 'e')
+            self.hotbar['extra']['hotbar_' .. row]['slot_' .. slot] = nil
+        end
+    end
 end
 
 function action_manager:insert_action(player_subjob, args)
     if not args[6] then
-        print('XIVHOTBAR2: Invalid arguments: set <mode> <hotbar> <slot> <action_type> <action> <target (optional)> <alias (optional)> <icon (optional)>')
+        print('XIVHOTBAR3: Invalid arguments: set <mode> <hotbar> <slot> <action_type> <action> <target (optional)> <alias (optional)> <icon (optional)>')
         return
     end
     local prio = args[1]:lower()
@@ -683,32 +719,37 @@ function action_manager:insert_action(player_subjob, args)
     local alias = args[7] or nil
     local icon = args[8] or nil
     if target ~= nil then target = target:lower() end
-	local environment_to_send = function()
-		if self.hotbar_settings.active_environment == 'field' then return 'f' else return 'b' end
-	end
+    local environment_to_send = function()
+        if self.hotbar_settings.active_environment == 'field' then
+            return 'f'
+        elseif self.hotbar_settings.active_environment == 'field' then
+            return 'b'
+        elseif self.hotbar_settings.active_environment == 'extra' then
+            return 'e'
+        end
+    end
 
     local new_action = action_manager:build(action_type, action, target, alias, icon)
-   
-	file_manager:insert_action(new_action, prio, player_subjob, environment_to_send(), row, slot)
+
+    file_manager:insert_action(new_action, prio, player_subjob, environment_to_send(), row, slot)
 end
 
 function action_manager:update_file_path(player_name, player_job)
-	file_manager:update_file_path(player_name, player_job)
+    file_manager:update_file_path(player_name, player_job)
 end
 
 function action_manager:add_actions(action_table)
 
-    
-    for key in pairs(action_table.environment) do 
-       
+    for key in pairs(action_table.environment) do
+
         add_action(self,
-			action_manager:build(
-				action_table.type[key], 
-				action_table.action[key], 
-				action_table.target[key], 
-				action_table.alias[key],
-				action_table.icon[key] 
-			),
+            action_manager:build(
+                action_table.type[key],
+                action_table.action[key],
+                action_table.target[key],
+                action_table.alias[key],
+                action_table.icon[key]
+            ),
             action_table.environment[key],
             action_table.hotbar[key],
             action_table.slot[key]
@@ -718,7 +759,19 @@ end
 
 function action_manager:toggle_environment()
     if self.hotbar_settings.active_environment == 'battle' then
+        last_battle_mode = 'battle'
         self.hotbar_settings.active_environment = 'field'
+    elseif self.hotbar_settings.active_environment == 'extra' then
+        last_battle_mode = 'extra'
+        self.hotbar_settings.active_environment = 'field'
+    else
+        self.hotbar_settings.active_environment = last_battle_mode
+    end
+end
+
+function action_manager:toggle_extra()  --Only swap between battle and extra
+    if self.hotbar_settings.active_environment == 'battle' then
+        self.hotbar_settings.active_environment = 'extra'
     else
         self.hotbar_settings.active_environment = 'battle'
     end
@@ -738,28 +791,27 @@ function action_manager:change_active_hotbar(new_hotbar)
 end
 
 function action_manager:load(player)
-    
-	action_manager:init_action_tables() -- Create/Initialize MainJob, SubJob, Stance, Weaponskill, Stance Tables
-    
+
+    action_manager:init_action_tables() -- Create/Initialize MainJob, SubJob, Stance, Weaponskill, Stance Tables
+
     local basepath = windower.addon_path .. 'data/'..player.name..'/'
     local job_file = loadfile(basepath .. player.main_job .. '.lua')
     local general_file = loadfile(basepath .. 'General.lua')
-    if job_file == nil then 
-        print(string.format("XIVHOTBAR2: Couldn't find the job file %s.lua!", player.main_job))
+    if job_file == nil then
+        print(string.format("XIVHOTBAR3: Couldn't find the job file %s.lua!", player.main_job))
     else
-   
+
     setfenv(job_file, _job_fileG) --Set a function's (JOB.lua) enviroment(global) into a table(_job_fileG)
-    
-    local job_root = job_file() -- Runs the player.main_job.lua file. Saves its return value in root. Return value is table: Keys are ['JOB'], Value is another table 
-                   
+
+    local job_root = job_file() -- Runs the player.main_job.lua file. Saves its return value in root. Return value is table: Keys are ['JOB'], Value is another table
     if not job_root then -- if root is nil (JOB.lua has no table), then reinitialize below variables and RETURN
         _job_fileG.xivhotbar_keybinds_job = {}
         _job_fileG._binds = {}
         return
     end
     _job_fileG.xivhotbar_keybinds_job = {}
-    _job_fileG.xivhotbar_keybinds_job[job_root] = _job_fileG.xivhotbar_keybinds_job[job_root] or 'Root' 
-    
+    _job_fileG.xivhotbar_keybinds_job[job_root] = _job_fileG.xivhotbar_keybinds_job[job_root] or 'Root'
+
 
     parse_binds(self.theme_options, player, job_root)
 
@@ -774,7 +826,7 @@ function action_manager:load(player)
     action_manager:add_actions(weaponskill_actions)
     end
 
-    if general_file == nil then 
+    if general_file == nil then
         print("Error, couldn't find file 'General.lua'")
     else
         setfenv(general_file, _general_fileG)
@@ -788,7 +840,7 @@ function action_manager:load(player)
         _general_fileG.xivhotbar_keybinds_general[general_root] = _general_fileG.xivhotbar_keybinds_general[general_root] or 'Root'
         parse_general_binds(general_root)
 
-		action_manager:add_actions(general_actions)
+        action_manager:add_actions(general_actions)
     end
 end
 

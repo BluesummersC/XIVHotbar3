@@ -183,6 +183,7 @@ defaults.Texts.HotbarNumbers.Stroke.Blue = 20
 -- Environment Numbers
 defaults.Texts.Environment = {}
 defaults.Texts.Environment.BattleText = 'Main'
+defaults.Texts.Environment.ExtraText = 'Extra'
 defaults.Texts.Environment.FieldText = 'General'
 defaults.Texts.Environment.Pos = {}
 defaults.Texts.Environment.Pos.HookOntoBar = 1
@@ -192,6 +193,7 @@ defaults.Texts.Environment.Pos.OffsetX = 0
 defaults.Texts.Environment.Pos.OffsetY = 17
 defaults.Texts.Environment.Pos.HookOffsetX = -8
 defaults.Texts.Environment.Pos.HookOffsetY = 0
+defaults.Texts.Environment.Pos.OffsetYBattleFieldGap = 30
 defaults.Texts.Environment.Italics = true
 defaults.Texts.Environment.Font = 'Calibri'
 defaults.Texts.Environment.Size = 12
@@ -260,6 +262,7 @@ defaults.Overlays.DisableScroll = false
 
 defaults.Controls = {}
 defaults.Controls.ToggleBattleMode = 43
+defaults.Controls.ToggleExtraMode = 40
 
 defaults.Dev = {}
 defaults.Dev.DevMode = false

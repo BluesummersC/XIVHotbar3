@@ -173,6 +173,7 @@ theme.apply = function(settings)
     -- [Texts - Environment] --
     options.font_battle_text_env                = st.Environment.BattleText
     options.font_field_text_env                 = st.Environment.FieldText
+    options.font_extra_text_env                 = st.Environment.ExtraText
     options.hook_onto_bar                       = st.Environment.Pos.HookOntoBar
     options.font_pos_x_env                      = st.Environment.Pos.PosX
     options.font_pos_y_env                      = st.Environment.Pos.PosY
@@ -180,6 +181,7 @@ theme.apply = function(settings)
     options.font_offset_y_env                   = st.Environment.Pos.OffsetY
     options.font_hook_offset_x_env              = st.Environment.Pos.HookOffsetX
     options.font_hook_offset_y_env              = st.Environment.Pos.HookOffsetY
+    options.font_offset_y_battle_field_gap      = st.Environment.Pos.OffsetYBattleFieldGap
     options.font_italics_env                    = st.Environment.Italics
     options.font_env                            = st.Environment.Font
     options.font_size_env                       = st.Environment.Size
@@ -240,6 +242,7 @@ theme.apply = function(settings)
     -- Controls
     local sco = settings.Controls
     options.controls_battle_mode = sco.ToggleBattleMode
+    options.controls_extra_mode = sco.ToggleExtraMode
 
 
 
